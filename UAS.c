@@ -45,7 +45,14 @@ int main()
 		m++; //input berapa kali 
 	
 	}
-
+	temp2 = head;
+	printf("urutan data: \n");
+	for(i=0;i<k;i++){ //printing 
+		printf("\n%s ",temp2->nama);
+		printf("\n%d ",temp2->umur);
+		printf("\n%s ",temp2->alamat);
+		temp2 = temp2->next;
+	}
 
   //end of input
 
