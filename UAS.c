@@ -1,174 +1,264 @@
 #include <stdio.h>
 #include <string.h>
-/*Note: 
-- setiap array kalo bisa dibuat linked list
-- Proram masi khusus untuk enkirpsi, kalo bisa dibuat 
-  jadi database
-- Jan lupa parallel
-*/
-
-struct data 
-{
+#include <stdlib.h>
+#include <errno.h>
+//Inisialisasi linked list
+struct data {
   char nama[20];
   int umur;
   char alamat[30];
-  struct data* next;
+  struct data * next;
 };
-	struct data *head;
+struct data * head;
 
+//prototype dari function encoding dan decoding
+void encoding(int k);
+int decoding();
+void mainmenu();
+int Node(int umur, char name[20], char alamat1[30], int m);
+//Function mengubah angka ke dalam ASCII
+int intToAscii(int number) {
+  return '0' + number;
+}
 
-void encoding();
-void decoding();
-
-
-
-//tes123
-int main() 
-{
-  int select,k,i,umur,m;
+int main() {
+  int select, k, i, umur, m;
   char alamat1[30];
   char name[30];
-  struct data* temp2;
+  struct data * temp2;
   head = NULL;
-  printf("Masukan jumlah data yang ingin diinput:");
-  scanf("%d",&k);
 
-  for(i=0;i<k;i++){
-		printf("Masukkan nama %d: ", i+1);
-		scanf(" %[^\n]s", name);
-		printf("Masukkan umur %d: ", i+1);
-		scanf("%d", &umur);
-		printf("Masukkan alamat %d: ", i+1);
-		scanf(" %[^\n]s", alamat1);
-		
-		Node(umur,name,alamat1,m);
-		m++; //input berapa kali 
-	
-	}
-	temp2 = head;
-	printf("urutan data: \n");
-	for(i=0;i<k;i++){ //printing 
-		printf("\n%s ",temp2->nama);
-		printf("\n%d ",temp2->umur);
-		printf("\n%s ",temp2->alamat);
-		temp2 = temp2->next;
-	}
-
-  //end of input
-
-  printf("Pilih menu\n");
-  printf("1. Enconding\n");
-  printf("2. Decoding\n");
-  printf("Pilihan: ");
-  scanf("%d", &select);
-  switch(select)
-  {
+    mainmenu();
+    while (1) {
+    scanf("%d", & select);
+    switch (select) {
     case 1:
-       encoding();
+      system("CLS");
+      printf("======================================\n");
+      printf("Enter Number of People: ");
+      scanf("%d", & k);
+      system("CLS");
+      
+
+      for (i = 0; i < k; i++) {
+      	printf("==========Data For Person %d===========\n", i+1);
+        printf("Name %d: ", i + 1);
+        scanf(" %[^\n]s", name);
+        printf("Age %d: ", i + 1);
+        scanf("%d", & umur);
+        printf("Address %d: ", i + 1);
+        scanf(" %[^\n]s", alamat1);
+
+        Node(umur, name, alamat1, m); //Fungsi node
+        m++; //input berapa kali 
+      }
+      printf("=============Encoding===============\n");
+      encoding(k);
+      system("PAUSE");
+      mainmenu();
       break;
       
+
     case 2:
-       decoding();
+      system("CLS");
+      decoding();
+      printf("\n");
+      system("PAUSE");
+      mainmenu();
+      break;
+
+    case 3:
+      exit(0);
       break;
 
     default:
-      printf("Invalid Input!");
-      break;
+      printf("Invalid Input!\n");
+      printf("Enter Correct Input: ");
+    }
   }
-
+  return 0;
 }
 
-void encoding(){
-  int i, key;
+void encoding(int k) {
+  struct data * temp3;
+  int i, j, key, n1, n2, space, newline;
   char fname[30];
-  char data[1000];
-  int kar;//int atau char perlu di config
-  printf("Masukkan nama file (tambahkan .txt dibelakang) : ");
-  gets(fname);
-  
-  FILE *fdata;
+
+  int kar; //int atau char perlu di config
+  printf("Enter File Name (add .txt) : ");
+  scanf(" %[^\n]s", fname);
+
+  FILE * fdata;
   fdata = fopen(fname, "w");
-  if (fdata == NULL){
-    printf("Error");
-    }
-    
-  printf("Masukkan data: \n");
-  gets(data);
-  printf("Masukkan key: ");
-  scanf("%d", &key);
-  
-  printf("Data hasil enkripsi: \n");
-  for(i=0;data[i]!='\0';i++){
-  	kar = data[i] + key; 
-    //Menggunakan enkripsi dengan shift ASCII number
-  	printf("%d ", kar);
-    //Print hasil enkripsi
-    fprintf(fdata,"%d ", kar);
-    //Data disimpan
+
+  if (fdata == NULL) {
+    perror("Error ");
   }
+
+  //Kunci untuk enkripsi
+  printf("Enter Key: ");
+  scanf("%d", & key);
+
+  printf("Encryption Result: \n");
+
+  temp3 = head;
+
+  //print hasil enkripsi ke text file
+  for (i = 0; i < k; i++) {
+    //memasukkan nama ke local array
+    char nama[30];
+    strcpy(nama, temp3 -> nama);
+
+    //memasukkan umur ke local array
+    int umur;
+    umur = temp3 -> umur;
+
+    //memasukkan alamat ke local array
+    char alamat[30];
+    strcpy(alamat, temp3 -> alamat);
+
+    //Memasukkan data nama kedalam text file
+    for (j = 0; nama[j] != '\0'; j++) {
+      kar = nama[j] + key;
+      //Menggunakan enkripsi dengan shift ASCII number
+      printf("%d ", kar);
+      //Print hasil enkripsi
+      fprintf(fdata, "%d ", kar);
+      //Data disimpan         
+    }
+
+    //Memasukkan data umur kedalam text file
+    if (umur >= 10) {
+      //Mengambil digit pertama dan kedua dari umur
+      n1 = umur / 10;
+      n2 = umur % 10;
+
+      kar = n1 + key;
+      space = 32 + key;
+
+      //Menggunakan enkripsi dengan shift ASCII number
+      printf("%d %d ", space, intToAscii(kar));
+      fprintf(fdata, "%d %d ", space, intToAscii(kar));
+      kar = n2 + key;
+      printf("%d %d ", intToAscii(kar), space);
+
+      //Print hasil enkripsi
+      fprintf(fdata, "%d %d ", intToAscii(kar), space);
+
+      //Data disimpan    
+    } else if (umur < 10) {
+      kar = umur + key;
+      space = 32 + key;
+      printf("%d %d %d ", space, intToAscii(kar), space);
+      fprintf(fdata, "%d %d %d ", space, intToAscii(kar), space);
+    }
+
+    for (j = 0; alamat[j] != '\0'; j++) {
+      kar = alamat[j] + key;
+      //Menggunakan enkripsi dengan shift ASCII number
+      printf("%d ", kar);
+      //Print hasil enkripsi
+      fprintf(fdata, "%d ", kar);
+      //Data disimpan         
+    }
+
+    newline = 10 + key;
+    printf("%d", newline);
+    fprintf(fdata, "%d", newline);
+
+    temp3 = temp3 -> next;
+    printf("\n");
+    fprintf(fdata, "\n");
+  }
+  
   fclose(fdata);
+  printf("File Has Been Encrypted and Saved as %s\n", fname);
 }
 
-void decoding(){
-  char fname1[30],fname2[30];
-  int num[1000] = {0};//Perlu dibuat dynamic
-  int i=0;
-  FILE* fdata1;
-  FILE* fdata2;
+int decoding() {
+  char fname1[30], fname2[30];
+  char decode[1000] = {
+    0
+  };
+  int i = 0, key;
+  FILE * fdata1;
+  FILE * fdata2;
 
- //get input from the user 
-  printf("Masukkan nama file yang ingin dibuka: ");
-  gets(fname1);
-  printf("\nMasukkan nama file yang ingin dituju:");
-  gets(fname2);
+  //Meminta input kepada user 
+  printf("======================================\n");
+  printf("Exixting Filename (add .txt): ");
+  scanf(" %[^\n]s", fname1);
+  printf("Destination Filename (add .txt): ");
+  scanf(" %[^\n]s", fname2);
 
-  //open both files
+  //Membuka kedua file yang sudah diminta user
   fdata1 = fopen(fname1, "r");
-  if(fdata1 == NULL)
-    {
-      return 0;
-    }
-    
+  if (fdata1 == NULL) {
+  	perror("Error ");
+    return 0;
+  }
+
   fdata2 = fopen(fname2, "w");
-  if(fdata2 == NULL)
-    {
-      return 0;
-    }
+  if (fdata2 == NULL) {
+  	perror("Error ");
+    return 0;
+  }
 
-//decrypt algorithm
-  i =0;
-	while(fscanf(fdata1, "%d ", &num[i])!= EOF){
-    num[i] = num[i] - 5;
-    i++; 
-	}
+  printf("Enter Key: ");
+  scanf("%d", & key);
 
-
-
-
-
-
-
-
+  //decrypt algorithm
+  printf("\nDecrypting\n");
+  i = 0;
+  while (fscanf(fdata1, "%d", & decode[i]) != EOF) {
+    decode[i] = decode[i] - key;
+    printf("%c", decode[i]);
+    fprintf(fdata2, "%c", decode[i]);
+    i++;
+  }
+  
+  fclose(fdata1);
+  fclose(fdata2);
+  printf("File Has Been Decrypted and Saved as %s\n", fname2);
 }
+void mainmenu(){
+	system("CLS");
+    printf("======================================\n");
+  	printf("     Data Encryptor and Decryptor\n");
+ 	printf("======================================\n");
+    printf("\t    Menu Selection\n");
+    printf("\t    1. Data Input\n");
+    printf("\t    2. Decryptor\n");
+    printf("\t    3. Exit\n");
+    printf("======================================\n");
+    printf("Selection: ");
+}
+//Function untuk linked list
+int Node(int umur, char name[20], char alamat1[30], int m) {
+  struct data * temp;
+  temp = malloc(sizeof(struct data));
+  int i;
 
-int Node(int umur, char name[20], char alamat1[30], int m){
-	struct data *temp;	
-	temp = malloc(sizeof(struct data));
-	int i;
-	strcpy(temp->alamat, alamat1);
-	temp->umur = umur;
-	strcpy(temp->nama, name);
-	temp->next = NULL;
-	if(m==1){
-		temp->next = head;
-		head = temp;
-		return 0;	
-	}
-	struct data *temp1;
-	temp1 = head;
-	for(i=0;i<m-2;i++){
-		temp1 = temp1->next;
-	}
-	temp->next = temp1->next;
-	temp1->next = temp;
+  //memasukkan data ke linked list
+  strcpy(temp -> alamat, alamat1);
+  temp -> umur = umur;
+  strcpy(temp -> nama, name);
+  temp -> next = NULL;
+
+  if (m == 1) {
+    temp -> next = head;
+    head = temp;
+    return 0;
+  }
+
+  struct data * temp1;
+  temp1 = head;
+
+  for (i = 0; i < m - 2; i++) {
+    temp1 = temp1 -> next;
+  }
+
+  temp -> next = temp1 -> next;
+  temp1 -> next = temp;
+
 }
