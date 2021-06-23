@@ -2,11 +2,13 @@
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
+#include<omp.h>
 //Inisialisasi linked list
 struct data {
   char nama[20];
   int umur;
   char alamat[30];
+  int urutan;
   struct data * next;
 };
 struct data * head;
@@ -17,7 +19,7 @@ int decoding();
 void mainmenu();
 int Node(int umur, char name[20], char alamat1[30], int m);
 //Function mengubah angka ke dalam ASCII
-int intToAscii(int number) {
+int intToAscii(int number){
   return '0' + number;
 }
 
@@ -102,74 +104,101 @@ void encoding(int k) {
   printf("Encryption Result: \n");
 
   temp3 = head;
-
-  //print hasil enkripsi ke text file
-  for (i = 0; i < k; i++) {
-    //memasukkan nama ke local array
-    char nama[30];
-    strcpy(nama, temp3 -> nama);
-
-    //memasukkan umur ke local array
-    int umur;
-    umur = temp3 -> umur;
-
-    //memasukkan alamat ke local array
-    char alamat[30];
-    strcpy(alamat, temp3 -> alamat);
-
-    //Memasukkan data nama kedalam text file
-    for (j = 0; nama[j] != '\0'; j++) {
-      kar = nama[j] + key;
-      //Menggunakan enkripsi dengan shift ASCII number
-      printf("%d ", kar);
-      //Print hasil enkripsi
-      fprintf(fdata, "%d ", kar);
-      //Data disimpan         
-    }
-
-    //Memasukkan data umur kedalam text file
-    if (umur >= 10) {
-      //Mengambil digit pertama dan kedua dari umur
-      n1 = umur / 10;
-      n2 = umur % 10;
-
-      kar = n1 + key;
-      space = 32 + key;
-
-      //Menggunakan enkripsi dengan shift ASCII number
-      printf("%d %d ", space, intToAscii(kar));
-      fprintf(fdata, "%d %d ", space, intToAscii(kar));
-      kar = n2 + key;
-      printf("%d %d ", intToAscii(kar), space);
-
-      //Print hasil enkripsi
-      fprintf(fdata, "%d %d ", intToAscii(kar), space);
-
-      //Data disimpan    
-    } else if (umur < 10) {
-      kar = umur + key;
-      space = 32 + key;
-      printf("%d %d %d ", space, intToAscii(kar), space);
-      fprintf(fdata, "%d %d %d ", space, intToAscii(kar), space);
-    }
-
-    for (j = 0; alamat[j] != '\0'; j++) {
-      kar = alamat[j] + key;
-      //Menggunakan enkripsi dengan shift ASCII number
-      printf("%d ", kar);
-      //Print hasil enkripsi
-      fprintf(fdata, "%d ", kar);
-      //Data disimpan         
-    }
-
-    newline = 10 + key;
-    printf("%d", newline);
-    fprintf(fdata, "%d", newline);
-
-    temp3 = temp3 -> next;
-    printf("\n");
-    fprintf(fdata, "\n");
-  }
+	
+  omp_set_num_threads(4);	
+	
+  #pragma omp parallel 
+  {
+  	int numt, tid,awal,akhir;
+  	int l;
+ 		numt = omp_get_num_threads();
+		tid = omp_get_thread_num();
+		awal = (k/numt)*tid; 
+		akhir = (k/numt)*(tid+1);
+		if(tid == numt-1){
+			akhir = k;
+		}
+	#pragma omp critical
+	{
+		printf("\nThread %d (%d - %d): ",tid,awal,akhir);
+		
+		printf("urutan :%d\n",temp3->urutan);
+		while((temp3->urutan) < awal){
+				temp3 = temp3->next;
+		}
+		printf("urutan :%d\n",temp3->urutan);
+		  //print hasil enkripsi ke text file
+		  for (i = awal; i < akhir; i++) {
+		    //memasukkan nama ke local array
+		    char nama[30];
+		    strcpy(nama, temp3 -> nama);
+		
+		    //memasukkan umur ke local array
+		    int umur;
+		    umur = temp3 -> umur;
+		
+		    //memasukkan alamat ke local array
+		    char alamat[30];
+		    strcpy(alamat, temp3 -> alamat);
+		
+		    //Memasukkan data nama kedalam text file
+		    for (j = 0; nama[j] != '\0'; j++) {
+		      kar = nama[j] + key;
+		      //Menggunakan enkripsi dengan shift ASCII number
+		      printf("%d ", kar);
+		      //Print hasil enkripsi
+		      fprintf(fdata, "%d ", kar);
+		      //Data disimpan         
+		    }
+		
+		    //Memasukkan data umur kedalam text file
+		    if (umur >= 10) {
+		      //Mengambil digit pertama dan kedua dari umur
+		      n1 = umur / 10;
+		      n2 = umur % 10;
+		
+		      kar = n1 + key;
+		      space = 32 + key;
+		
+		      //Menggunakan enkripsi dengan shift ASCII number
+		      printf("%d %d ", space, intToAscii(kar));
+		      fprintf(fdata, "%d %d ", space, intToAscii(kar));
+		      kar = n2 + key;
+		      printf("%d %d ", intToAscii(kar), space);
+		
+		      //Print hasil enkripsi
+		      fprintf(fdata, "%d %d ", intToAscii(kar), space);
+		
+		      //Data disimpan    
+		    } else if (umur < 10) {
+		      kar = umur + key;
+		      space = 32 + key;
+		      printf("%d %d %d ", space, intToAscii(kar), space);
+		      fprintf(fdata, "%d %d %d ", space, intToAscii(kar), space);
+		    }
+		
+		    for (j = 0; alamat[j] != '\0'; j++) {
+		      kar = alamat[j] + key;
+		      //Menggunakan enkripsi dengan shift ASCII number
+		      printf("%d ", kar);
+		      //Print hasil enkripsi
+		      fprintf(fdata, "%d ", kar);
+		      //Data disimpan         
+		    }
+		
+		    newline = 10 + key;
+		    printf("%d", newline);
+		    fprintf(fdata, "%d", newline);
+		
+		    temp3 = temp3 -> next;
+		    printf("\n");
+		    fprintf(fdata, "\n");
+		  }	
+	}
+		
+  
+  
+ }		
   
   fclose(fdata);
   printf("File Has Been Encrypted and Saved as %s\n", fname);
@@ -215,7 +244,7 @@ int decoding() {
     printf("%c", decode[i]);
     fprintf(fdata2, "%c", decode[i]);
     i++;
-  }
+  }	
   
   fclose(fdata1);
   fclose(fdata2);
@@ -240,6 +269,7 @@ int Node(int umur, char name[20], char alamat1[30], int m) {
   int i;
 
   //memasukkan data ke linked list
+  temp->urutan = m;
   strcpy(temp -> alamat, alamat1);
   temp -> umur = umur;
   strcpy(temp -> nama, name);
