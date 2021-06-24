@@ -117,7 +117,7 @@ void encoding(int k,struct data* head) {
     if (tid == numt - 1) {
       akhir = k;
     }
-	#pragma omp barrier
+	#pragma omp barrier //agar inisialisasi akhir dan awal bisa jalan
    //pencegahan race condition, sibuat oleh rionaldi
     #pragma omp critical
 	  {
