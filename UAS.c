@@ -70,7 +70,7 @@ int main() {
     case 3:
       exit(0);
       break;
-    //error handling dibuat oleh matthew w
+    //error handling dibuat oleh matthew e
     default:
       printf("Invalid Input!\n");
       printf("Enter Correct Input: ");
