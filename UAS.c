@@ -4,7 +4,7 @@
 #include <errno.h>
 #include <omp.h>
 
-//Inisialisasi linked list
+//Inisialisasi linked list, dibuat oleh rionaldi
 struct data {
   char nama[20];
   int umur;
@@ -18,7 +18,7 @@ void encoding(int k,struct data* head);
 int decoding();
 void mainmenu();
 int Node(struct data** head, int umur, char name[20], char alamat1[30], int m);
-//Function mengubah angka ke dalam ASCII
+//Function mengubah angka ke dalam ASCII, dibuat oleh steven nathaniel
 int intToAscii(int number) {
   return '0' + number;
 }
@@ -40,7 +40,7 @@ int main() {
       printf("Enter Number of People: ");
       scanf("%d", & k);
       system("CLS");
-      for (i = 0; i < k; i++) {
+      for (i = 0; i < k; i++) {//input data dibuat oleh steven nathaniel
         printf("==========Data For Person %d===========\n", i + 1);
         printf("Name %d: ", i + 1);
         scanf(" %[^\n]s", name);
@@ -50,7 +50,7 @@ int main() {
         scanf(" %[^\n]s", alamat1);
 
         Node(&head, umur, name, alamat1, m); //Fungsi node
-        m++; //input berapa kali 
+        m++; //input berapa kali, dibuat oleh rionaldi
       }
       system("CLS");
       printf("==============Encyption===============\n");
@@ -58,7 +58,7 @@ int main() {
       system("PAUSE");
       mainmenu();
       break;
-
+    //menu dibuat oleh benedicto matthew
     case 2:
       system("CLS");
       decoding();
@@ -70,7 +70,7 @@ int main() {
     case 3:
       exit(0);
       break;
-
+    //error handling dibuat oleh matthew w
     default:
       printf("Invalid Input!\n");
       printf("Enter Correct Input: ");
@@ -78,7 +78,7 @@ int main() {
   }
   return 0;
 }
-
+//Fungsi enconding dibuat oleh rionaldi dwipurna dan steven nathaniel
 void encoding(int k,struct data* head) {
   struct data * temp3 = head;
   int i, j, key, n1, n2, space, newline;
@@ -95,15 +95,15 @@ void encoding(int k,struct data* head) {
     perror("Error ");
   }
 
-  //Kunci untuk enkripsi
+  //Kunci untuk enkripsi, dibuat oleh rionaldi
   printf("Enter Key: ");
   scanf("%d", & key);
 
   printf("Encryption Result: \n");
 
-  //temp3 = head;
+  
 
-  omp_set_num_threads(4); //Set jumlah thread
+  omp_set_num_threads(4); //Set jumlah thread, dibuat oleh rionaldi
 
   #pragma omp parallel 
   {
@@ -118,11 +118,11 @@ void encoding(int k,struct data* head) {
       akhir = k;
     }
 	#pragma omp barrier
-   //pencegahan race condition
+   //pencegahan race condition, sibuat oleh rionaldi
     #pragma omp critical
 	  {
       printf("\nThread %d (%d - %d): ", tid, awal, akhir);
-
+      //line 125 - 152 dibuat oleh rionaldi
       //Loop sampai urutan node sesuai dengan urutan data
       while ((temp3 -> urutan) < awal) {
         temp3 = temp3 -> next;
@@ -150,7 +150,7 @@ void encoding(int k,struct data* head) {
           fprintf(fdata, "%d ", kar);
           //Data disimpan         
         }
-
+      // line 153 -191 dibuat oleh steven nathaniel
         //Memasukkan data umur kedalam text file
         if (umur >= 10) {
           //Mengambil digit pertama dan kedua dari umur
@@ -188,7 +188,7 @@ void encoding(int k,struct data* head) {
         printf("%d", newline);
         fprintf(fdata, "%d", newline);
 
-        //Lanjut ke node berikutnya
+        //Lanjut ke node berikutnya, dibuat oleh rionaldi
         temp3 = temp3 -> next;
         printf("\n");
         fprintf(fdata, "\n");
@@ -200,7 +200,7 @@ void encoding(int k,struct data* head) {
   fclose(fdata);
   printf("\nFile Has Been Encrypted and Saved as %s\n", fname);
 }
-
+//Fungsi untuk decoding, dibuat oleh benedicto matthwew dan matthew eucharist
 int decoding() {
   char fname1[30], fname2[30];
   char decode[1000] = {0};
@@ -208,7 +208,7 @@ int decoding() {
   FILE * fdata1;
   FILE * fdata2;
 
-  //Meminta input kepada user 
+  //Meminta input kepada user, dibuat oleh matthew eucharist 
   printf("==============Decryption==============\n");
   printf("Exixting Filename (add .txt): ");
   scanf(" %[^\n]s", fname1);
@@ -232,7 +232,7 @@ int decoding() {
   printf("Enter Key: ");
   scanf("%d", & key);
 
-  //decrypt algorithm
+  //decrypt algorithm dibuat oleh benedicto matthew
   printf("\nDecrypting...\n\n");
   i = 0;
   #pragma omp parallel
@@ -254,7 +254,7 @@ int decoding() {
   fclose(fdata2);
   printf("\nFile Has Been Decrypted and Saved as %s\n", fname2);
 }
-//Function main menu
+//Function main menu dibuat oleh benedicto matthew
 void mainmenu() {
   system("CLS");
   printf("======================================\n");
@@ -267,7 +267,7 @@ void mainmenu() {
   printf("======================================\n");
   printf("Selection: ");
 }
-//Function untuk linked list
+//Function untuk linked list, , dibuat oleh rionaldi
 int Node(struct data** head, int umur, char name[20], char alamat1[30], int m) {
   struct data * temp = NULL;
   temp = malloc(sizeof(struct data));
@@ -295,4 +295,5 @@ int Node(struct data** head, int umur, char name[20], char alamat1[30], int m) {
 
   temp -> next = temp1 -> next;
   temp1 -> next = temp;
+
 }
